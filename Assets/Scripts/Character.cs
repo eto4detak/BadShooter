@@ -11,8 +11,8 @@ public class Character : Unit
         slowDown = 5f;
         Health = 100f;
         maxHealth = 200f;
-        mana = 100f;
-        maxMana = 100f;
+        morale = 100f;
+        maxMorale = 100f;
         aggression = 0f;
         faction = Faction.Hero;
     }

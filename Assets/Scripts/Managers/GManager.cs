@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GManager : MonoBehaviour
 {
-    public static List<UnitGroup> allGroups = new List<UnitGroup>();
     public static Character character;
     public static float deltaPositionY = 0.1f;
     public static int groupCount = 0;
@@ -17,6 +16,8 @@ public class GManager : MonoBehaviour
     public static RunUnitManager runUnitManager;
     public static float startPositionY = 5.5f;
     public static SelectObjects selectObjects;
+    public GameObject characterPrefab;
+    public  List<CharacterManager> Characters;
 
     void Awake()
     {
@@ -32,18 +33,20 @@ public class GManager : MonoBehaviour
 
     void Start()
     {
-       // SetSettings();
-
         StartWorld();
-        
-       // CreateHumanWarrior();
+        SpawnAllCharacters();
     }
 
 
-
-    void Update()
+    private void SpawnAllCharacters()
     {
-        
+        for (int i = 0; i < Characters.Count; i++)
+        {
+            Characters[i].instance =
+                Instantiate(characterPrefab, Characters[i].SpawnPoint.position, Characters[i].SpawnPoint.rotation) as GameObject;
+            Characters[i].PlayerNumber = i + 1;
+            Characters[i].Setup();
+        }
     }
 
 
@@ -75,9 +78,7 @@ public class GManager : MonoBehaviour
     private void StartWorld()
     {
         
-        UnitGroup.CreateUnits(new Vector3(40, 7f, 20));
-        UnitGroup.CreateUnits(new Vector3(40, 5.6f, 40));
-        UnitGroup.CreateUnits(new Vector3(60, 5.6f, 40));
+
 
     }
 

@@ -56,10 +56,9 @@ public class MouseManager : MonoBehaviour
                 Unit unitTarget = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
                 if (unitTarget)
                 {
-                    UnitGroup target = unitTarget.group;
-                    if (target)
+                    if (unitTarget)
                     {
-                        OnClickRightUnit(target);
+                        OnClickRightUnit(unitTarget);
                         
                         return;
                     }
@@ -81,8 +80,8 @@ public class MouseManager : MonoBehaviour
     protected static void OnClickLeftUnit(Unit unit)
     {
         SelectObjects.Deselect();
-        SelectObjects.TrySelectUnit(unit);
-        GManager.gameHUD.SelectUnit(unit.group);
+        SelectObjects.SelectUnit(unit);
+        GManager.gameHUD.SelectUnit(unit);
     }
     protected static void OnClickLeftTerrain(Terrain terrain)
     {
@@ -93,27 +92,40 @@ public class MouseManager : MonoBehaviour
         GManager.gameHUD.ClearPanel();
     }
 
-    internal static void OnClickRightUnit(UnitGroup target)
+    internal static void OnClickRightUnit(Unit target)
     {
         if (SelectObjects.HaveSelected())
         {
-            if (GManager.pController.Team.Equals(target.team))
+            if (GManager.pController.Team.Equals(target))
             {
-                UnitGroup.SetPursueCommand(SelectObjects.selectedGroups, target);
+                Debug.Log("OnClickRightUnit");
+
+                for (int i = 0; i < SelectObjects.selectedObjects.Count; i++)
+                {
+                    SelectObjects.selectedObjects[i].SetCommand(new PursueCommand(SelectObjects.selectedObjects[i],target));
+                }
             }
             else
             {
-                UnitGroup.SetAttackCommand(SelectObjects.selectedGroups, target);
+                Debug.Log("else OnClickRightUnit");
+
+                for (int i = 0; i < SelectObjects.selectedObjects.Count; i++)
+                {
+                    SelectObjects.selectedObjects[i].SetCommand(new AttackCommand(SelectObjects.selectedObjects[i], target));
+                }
             }
         }
         
         GManager.gameHUD.SetTarget(target);
     }
-    internal static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
+    public static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
     {
         if (SelectObjects.HaveSelected())
         {
-            UnitGroup.SetMoveCommand(SelectObjects.selectedGroups, newPosition);
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(newPosition), out RaycastHit hit))
+            {
+                Unit.SetMoveCommand(SelectObjects.selectedObjects, hit.point);
+            }
         }
         GManager.gameHUD.ClearTarget();
     }

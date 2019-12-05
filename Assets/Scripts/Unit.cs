@@ -4,34 +4,42 @@ using UnityEngine.AI;
 
 public class Unit : MonoBehaviour
 {
-    internal float aggression = 0f;
-    internal NavMeshAgent agent;
-    internal float attackRadius = 2f;
-    protected List<float> allTypeAggression = new List<float>();
-    //public IUnitCommand command;
-    internal float armor = 1f;
-    protected List<Unit> commandTargets = new List<Unit>();
-    internal bool canDamage = true;
-    internal bool canRun = true;
-    internal float domage = 1f;
-    internal UnitGroup group;
-    protected Faction faction = Faction.Neutral;
-    internal float jumpForce = 20.0f;
-    internal bool isGrounded = true;
+    [HideInInspector] public float armor = 1f;
+    [HideInInspector] public float aggression = 0f;
+    [HideInInspector] public float attackRadius = 2f;
+    [HideInInspector] public float domage = 1f;
+    [HideInInspector] public float maxHealth = 100f;
+    [HideInInspector] public float speed = 2f;
+
+    [HideInInspector] public bool canDamage = true;
+    [HideInInspector] public bool canRun = true;
+    [HideInInspector] public float jumpForce = 20.0f;
+    [HideInInspector] public bool isGrounded = true;
+
+    [HideInInspector] public float morale = 1f;
+    [HideInInspector] public float maxMorale = 1f;
+    [HideInInspector] public float maxAggression = 1f;
+
+    [HideInInspector] public static GameObject prefab;
+
+    [HideInInspector] public Rigidbody rb;
+    [HideInInspector] public NavMeshAgent agent;
+
+    [HideInInspector] public CharacterManager manager;
+
     private float health = 100f;
-    internal float maxHealth = 100f;
-    internal float mana = 1f;
-    internal float maxMana = 1f;
-    internal float maxAggression = 1f;
+
+    protected List<float> allTypeAggression = new List<float>();
+    protected UnitCommand command;
+    protected List<Unit> commandTargets = new List<Unit>();
     protected UnitStatus status = UnitStatus.Norm;
     protected float slowDown = 1f;
-    internal static GameObject prefab;
-    private Vector3? newPosition;
-    internal float speed = 2f;
-    internal Rigidbody rb;
+    protected Faction faction = Faction.Neutral;
 
-    internal Vector3? NewPosition { get => newPosition; set => newPosition = value; }
-    internal float Health { get => health;
+    [HideInInspector] public Vector3? NewPosition { get; set; }
+
+    [HideInInspector]
+    public float Health { get => health;
         set
         {
             health = value;
@@ -44,9 +52,7 @@ public class Unit : MonoBehaviour
 
     public virtual void Awake()
     {
-      //  command = UnitCommand.Idle;
-
-      //  SelectObjects.SetAllowed(this);
+        SelectObjects.SetAllowed(this);
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
     }
@@ -54,17 +60,19 @@ public class Unit : MonoBehaviour
 
     protected virtual void Start()
     {
-       // command = new MoveCommand(selfGroup, transform.position, new Vector3());
+        command = new MoveCommand(this, transform.position);
     }
 
     protected virtual void Update()
     {
         CheckErrorPositionY();
         UpdateAction();
+       // command.DoCommand();
     }
 
     void OnMouseDown()
     {
+
     }
 
     void OnMouseExit()
@@ -81,13 +89,17 @@ public class Unit : MonoBehaviour
     private void OnCollisionStay(Collision other)
     {
         Unit target = other.gameObject.GetComponent<Unit>();
-        if (target == null || target.group == group) return;
-        group.command.OnStay(target);
+      //  if (target == null || target.group == group) return;
+       // group.command.OnStay(target);
     }
 
 
 
 
+    public virtual Sprite GetSprite()
+    {
+       return Resources.Load<Sprite>("Sprite/unit");
+    }
 
     protected virtual void AimCounterpoise()
     {
@@ -169,6 +181,24 @@ public class Unit : MonoBehaviour
     }
 
 
+    public void MoveToPoint3D(Vector3 newPosition)
+    {
+         agent.destination = newPosition;
+    }
+
+
+    public static void SetMoveCommand(List<Unit> executers, Vector3 newPosition)
+    {
+        for (int i = 0; i < executers.Count; i++)
+        {
+            executers[i].command = new MoveCommand(executers[i], newPosition);
+            // groups[i].command = new MoveCommand(groups[i], newPosition, groupPositions[i]);
+        }
+    }
+    public void SetCommand(UnitCommand newCommand)
+    {
+        command = newCommand;
+    }
 
     //public void MoveGroupToPoint( Vector3 point)
     //{

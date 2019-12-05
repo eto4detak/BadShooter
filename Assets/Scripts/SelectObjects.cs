@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class SelectObjects : MonoBehaviour
 {
-    public static List<Unit> allowedSelectObj; // массив всех юнитов, которых мы можем выделить
+    public static List<Unit> allowedSelectObj = new List<Unit>(); // массив всех юнитов, которых мы можем выделить
     public static List<Unit> selectedObjects; // выделенные объекты
-    public static List<UnitGroup> selectedGroups; // выделенные объекты
+    public static List<Unit> selectedGroups; // выделенные объекты
+
 
     public GUISkin skin;
     private Rect rect;
@@ -19,16 +20,17 @@ public class SelectObjects : MonoBehaviour
     void Awake()
     {
         selectedObjects = new List<Unit>();
-        selectedGroups = new List<UnitGroup>();
+        selectedGroups = new List<Unit>();
     }
 
     private void Start()
     {
-        allowedSelectObj = GManager.pController.PlayerUnits;
+
     }
 
     private void Update()
     {
+        Debug.Log("selected " + selectedObjects.Count);
         if(selectedObjects != null)
         {
             foreach (var selected in selectedObjects)
@@ -83,7 +85,7 @@ public class SelectObjects : MonoBehaviour
                         );
 
         GUI.Box(rect, "");
-
+       
         for (int j = 0; j < allowedSelectObj.Count; j++)
         {
             if (allowedSelectObj[j] == null) continue;
@@ -93,25 +95,13 @@ public class SelectObjects : MonoBehaviour
 
             if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
             {
-                if (allowedSelectObj[j].group == null)
+                if (selectedObjects.Count == 0)
                 {
-                    if (selectedObjects.Count == 0)
-                    {
-                        selectedObjects.Add(allowedSelectObj[j]);
-                    }
-                    else if (!CheckUnit(allowedSelectObj[j]))
-                    {
-                        selectedObjects.Add(allowedSelectObj[j]);
-                    }
+                    SelectUnit(allowedSelectObj[j]);
                 }
-                else
+                else if (!CheckUnit(allowedSelectObj[j]))
                 {
-                    if (!selectedGroups.Contains(allowedSelectObj[j].group))
-                    {
-                        selectedGroups.Add(allowedSelectObj[j].group);
-                        //SelectGroup(allowedSelectObj[j].selfGroup);
-
-                    }
+                    SelectUnit(allowedSelectObj[j]);
                 }
             }
 
@@ -133,7 +123,7 @@ public class SelectObjects : MonoBehaviour
 
     public static bool HaveSelected()
     {
-        if (selectedGroups.Count > 0 ) return true;
+        if (selectedObjects.Count > 0 ) return true;
         return false;
     }
 
@@ -143,54 +133,21 @@ public class SelectObjects : MonoBehaviour
         allowedSelectObj.Add(obj);
     }
 
+
     private static void HighlightSelected()
     {
         List<Unit> unitForHighlight = new List<Unit>();
         unitForHighlight.AddRange(selectedObjects);
-        foreach (var group in selectedGroups)
-        {
-            unitForHighlight.AddRange(group.units);
-        }
         HighlightManager.HighlightUnits(unitForHighlight);
     }
 
-    public static void TrySelectUnit(Unit unit)
-    {
-        Unit findUnit = allowedSelectObj.Find(x => x.Equals(unit));
-        if (findUnit != null)
-        {
-            selectedGroups.Add(unit.group);
-            HighlightSelected();
-        }
-        
 
-        //if (unit.selfGroup == null)
-        //{
-        //    Unit findUnit = allowedSelectObj.Find(x => x.Equals(unit));
-        //    if (findUnit != null)
-        //    {
-        //        selectedObjects.Add(unit);
-        //        HighlightSelected();
-        //    }
-        //}
-        //else
-        //{
-        //    selectedGroups.Add(unit.selfGroup);
-        //}
+    public static void SelectUnit(Unit unit)
+    {
+        selectedObjects.Add(unit);
+        HighlightSelected();
     }
 
-    public static void SelectGroup(UnitGroup group)
-    {
-        foreach (var groupUnit in group.units)
-        {
-            selectedObjects.Add(groupUnit);
-        }
-    }
-
-    //public static void DeselectUnit(Unit unit)
-    //{
-    //    selectedObjects.Remove(unit);
-    //}
 
     public static void Deselect()
     {
@@ -199,6 +156,7 @@ public class SelectObjects : MonoBehaviour
         selectedGroups.Clear();
         HighlightManager.Clear();
     }
+
 
     private Vector2 GetAvailablePosition(Vector2 point)
     {
@@ -209,56 +167,11 @@ public class SelectObjects : MonoBehaviour
         return point;
     }
 
+
     public void SetForbiddenPosition(Vector2 point)
     {
         minY = point.y;
     }
-
-    //public void SetSelected(Rect rect)
-    //{
-    //    for (int j = 0; j < allowedSelectObj.Count; j++)
-    //    {
-    //        // трансформируем позицию объекта из мирового пространства, в пространство экрана
-    //        //Vector2 tmp1 = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
-    //        //    Screen.height - Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
-
-    //        Vector2 unitPoint = new Vector2(Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).x,
-    //            Camera.main.WorldToScreenPoint(allowedSelectObj[j].transform.position).y);
-
-
-    //        if (rect.Contains(unitPoint)) // проверка, находится-ли текущий объект в рамке
-    //        {
-
-    //            if(allowedSelectObj[j].selfGroup == null)
-    //            {
-    //                Debug.Log(" null allowedSelectObj[j].selfGroup");
-
-    //                if (selectedObjects.Count == 0)
-    //                {
-    //                    selectedObjects.Add(allowedSelectObj[j]);
-    //                }
-    //                else if (!CheckUnit(allowedSelectObj[j]))
-    //                {
-    //                    selectedObjects.Add(allowedSelectObj[j]);
-    //                }
-    //            }
-    //            else
-    //            {
-
-    //                Debug.Log("allowedSelectObj[j].selfGroup");
-
-    //                foreach (var groupUnit in allowedSelectObj[j].selfGroup.units)
-    //                {
-
-    //                    Debug.Log("selected group");
-    //                    selectedObjects.Add(groupUnit);
-    //                }
-    //            }
-
-
-    //        }
-    //    }
-    //}
 
     private bool CheckPosition(Vector2 startPos, Vector2 endPos)
     {

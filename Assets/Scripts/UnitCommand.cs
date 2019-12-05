@@ -4,15 +4,15 @@ using UnityEngine;
 
 public abstract class UnitCommand
 {
-    protected UnitGroup SelfGroup { get; set; }
-    protected UnitGroup Target { get; set; }
+    protected Unit Executer { get; set; }
+    protected Unit Target { get; set; }
     public virtual void DoCommand()
     {
 
     }
     public virtual void OnStay(Unit target)
     {
-        SelfGroup.TryAttackUnit(target);
+        //SelfGroup.TryAttackUnit(target);
     }
 
 
@@ -20,32 +20,23 @@ public abstract class UnitCommand
 
 public class AttackCommand : UnitCommand
 {
-    public AttackCommand(UnitGroup paramSelf, UnitGroup paramTarget)
+    public AttackCommand(Unit paramSelf, Unit paramTarget)
     {
-        SelfGroup = paramSelf;
+        Executer = paramSelf;
         Target = paramTarget;
         DoCommand();
     }
     public override void DoCommand()
     {
-        Debug.Log("AttackCommand " + SelfGroup.name);
-
-        if(Target.units.Count > 0)
+        if(Target)
         {
-            for (int i = 0; i < Target.units.Count; i++)
-            {
-                if (Target.units[i] != null)
-                {
-                    SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
-                    return;
-                }
-            }
-            
+            Executer.manager.Fire(Target.gameObject);
+            //Executer.MoveToPoint3D(Target.transform.position);
         }
     }
     public override void OnStay(Unit target)
     {
-        SelfGroup.TryAttackUnit(target);
+       // SelfGroup.TryAttackUnit(target);
     }
 
 }
@@ -53,36 +44,34 @@ public class MoveCommand : UnitCommand
 {
     public Vector3 NewPosition { get; set; }
     public Vector3 GroupOffset { get; set; }
-    public MoveCommand(UnitGroup paramGroup, Vector3 paramNewPosition, Vector3 paramGroupOffset)
+    public MoveCommand( Unit paramGroup, Vector3 paramNewPosition)
     {
-        SelfGroup = paramGroup;
+        Executer = paramGroup;
         NewPosition = paramNewPosition;
-        GroupOffset = paramGroupOffset;
-
-        SelfGroup.MoveGroupToPoint2D(NewPosition, GroupOffset);
+        Executer.manager.Move(NewPosition);
+       // Executer.MoveToPoint3D(NewPosition);
         DoCommand();
     }
 
     public override void DoCommand()
     {
-        Debug.Log("MoveCommand " + SelfGroup.name);
-        if (SelfGroup.CheckStopped())
-        {
-            SelfGroup.command = new StopCommand(SelfGroup);
-        }
+        //if (Executer.CheckStopped())
+        //{
+        //    Executer.command = new StopCommand(Executer);
+        //}
     }
     public override void OnStay(Unit target)
     {
-        SelfGroup.TryAttackUnit(target);
+        //Executer.TryAttackUnit(target);
     }
 }
 public class StopCommand : UnitCommand
 {
     public Vector3 NewPosition { get; set; }
     public Vector3 GroupOffset { get; set; }
-    public StopCommand(UnitGroup paramSelfGroup)
+    public StopCommand(Unit paramSelfGroup)
     {
-        SelfGroup = paramSelfGroup;
+        Executer = paramSelfGroup;
         DoCommand();
     }
 
@@ -92,16 +81,16 @@ public class StopCommand : UnitCommand
 
     public override void OnStay(Unit unitOther)
     {
-        SelfGroup.TryAttackUnit(unitOther);
+       // Executer.TryAttackUnit(unitOther);
     }
 
 }
 
 public class PursueCommand : UnitCommand
 {
-    public PursueCommand(UnitGroup paramGroup, UnitGroup paramTarget)
+    public PursueCommand(Unit paramUnit, Unit paramTarget)
     {
-        SelfGroup = paramGroup;
+        Executer = paramUnit;
         Target = paramTarget;
 
         DoCommand();
@@ -109,31 +98,22 @@ public class PursueCommand : UnitCommand
 
     public override void DoCommand()
     {
-        Debug.Log("PursueCommand " + SelfGroup.name);
-
-        if (Target.units.Count > 0)
+        if (Target)
         {
-            for (int i = 0; i < Target.units.Count; i++)
-            {
-                if (Target.units[i] != null)
-                {
-                    SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
-                    return;
-                }
-            }
+            Executer.MoveToPoint3D(Target.transform.position);
         }
     }
     public override void OnStay(Unit unit)
     {
-        SelfGroup.TryAttackUnit(unit);
+       // Executer.TryAttackUnit(unit);
 
     }
 }
 public class ProtectionCommand : UnitCommand
 {
-    public ProtectionCommand(UnitGroup paramGroup, UnitGroup paramTarget)
+    public ProtectionCommand(Unit paramGroup, Unit paramTarget)
     {
-        SelfGroup = paramGroup;
+        Executer = paramGroup;
         Target = paramTarget;
 
         DoCommand();
@@ -141,23 +121,15 @@ public class ProtectionCommand : UnitCommand
 
     public override void DoCommand()
     {
-        Debug.Log("PursueCommand " + SelfGroup.name);
 
-        if (Target.units.Count > 0)
+        if (Target)
         {
-            for (int i = 0; i < Target.units.Count; i++)
-            {
-                if (Target.units[i] != null)
-                {
-                    SelfGroup.MoveGroupToPoint3D(Target.units[i].transform.position);
-                    return;
-                }
-            }
+             Executer.MoveToPoint(Target.transform.position);
         }
     }
     public override void OnStay(Unit unit)
     {
-        SelfGroup.TryAttackUnit(unit);
+       // Executer.TryAttackUnit(unit);
     }
 }
 

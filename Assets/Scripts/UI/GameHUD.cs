@@ -33,49 +33,46 @@ public class GameHUD : MonoBehaviour
         
     }
 
-
-    public static Sprite GetFrontImage<T>(T obj) where T : class
+    public void SelectUnit(Unit target) 
     {
-        if(obj is UnitGroup) {
-            return Resources.Load<Sprite>("Sprite/SqareUnit");
-        }
-        return null;
+        frontImg.GetComponent<Button>().image.sprite = target.GetSprite();
+        damage.text = target.domage.ToString();
+        armor.text = target.armor.ToString();
+        speed.text = target.speed.ToString();
+        //if (target.command is AttackCommand)
+        //{
+        //    btnAttack.GetComponent<Button>().image.color = Color.red;
+        //    targetImg.GetComponent<Button>().image.sprite = null;
+        //    targetList.GetComponentInChildren<Text>().text = "";
+        //}
     }
 
-    public void SelectUnit<T>(T self) where T : class
-    {
-        if (self is UnitGroup)
-        {
-            frontImg.GetComponent<Button>().image.sprite = Resources.Load<Sprite>("Sprite/sqareUnit");
-            UnitGroup group = self as UnitGroup;
-            damage.text = group.units[0].domage.ToString();
-            armor.text = group.units[0].armor.ToString();
-            speed.text = group.units[0].speed.ToString();
-            if (group.command is AttackCommand)
-            {
-                btnAttack.GetComponent<Button>().image.color = Color.red;
-                targetImg.GetComponent<Button>().image.sprite = null;
-                targetList.GetComponentInChildren<Text>().text = "";
-            }
-        }
-    }
 
     public void SetTarget<T>(T target) where T : class
     {
-        if (target is UnitGroup)
-        {
-            targetImg.GetComponent<Button>().image.sprite = Resources.Load<Sprite>("Sprite/sqareUnit");
-            targetList.GetComponentInChildren<Text>().text = (target as UnitGroup).name;
-        }
+        return;
+        //if (target is UnitGroup)
+        //{
+        //    targetImg.GetComponent<Button>().image.sprite = Resources.Load<Sprite>("Sprite/sqareUnit");
+        //    targetList.GetComponentInChildren<Text>().text = (target as UnitGroup).name;
+        //}
     }
+
+
     public void ClearTarget()
     {
+        return;
         targetImg.GetComponent<Button>().image.sprite = null;
         targetList.GetComponentInChildren<Text>().text = null;
     }
 
+
     public void ClearPanel()
     {
+        damage.text = "";
+        armor.text = "";
+        speed.text = "";
+
         frontImg.GetComponent<Button>().image.sprite = null;
         targetImg.GetComponent<Button>().image.sprite = null;
         targetList.GetComponentInChildren<Text>().text = "";
@@ -83,5 +80,6 @@ public class GameHUD : MonoBehaviour
         btnMove.GetComponent<Button>().image.color = Color.white;
         btnStop.GetComponent<Button>().image.color = Color.white;
     }
+
 
 }

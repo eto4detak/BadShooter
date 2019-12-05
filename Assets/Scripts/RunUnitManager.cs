@@ -29,16 +29,16 @@ public class RunUnitManager : MonoBehaviour
     {
         foreach (var unit in units)
         {
-            SelectObjects.TrySelectUnit(unit);
+            SelectObjects.SelectUnit(unit);
         }
     }
     public static void SetSelectedUnit(Unit unit)
     {
-        SelectObjects.TrySelectUnit(unit);
+        SelectObjects.SelectUnit(unit);
     }
     public static void RemoveSelectedUnit(Unit unit)
     {
-        SelectObjects.TrySelectUnit(unit);
+        SelectObjects.SelectUnit(unit);
     }
 
 
@@ -68,7 +68,7 @@ public class RunUnitManager : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             SelectObjects.Deselect();
-            SelectObjects.TrySelectUnit(unit);
+            SelectObjects.SelectUnit(unit);
         }
         if (Input.GetMouseButtonDown(1))
         {

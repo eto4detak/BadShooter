@@ -17,19 +17,20 @@ public class Formation : MonoBehaviour
         
     }
 
-    public static void MoveFormationRow(List<UnitGroup> selectedGroups, Vector3 newPosition)
-    {
-        if(selectedGroups.Count > 0)
-        {
-            Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), selectedGroups.Count, groupIndent);
-            for (int i = 0; i < selectedGroups.Count; i++)
-            {
-                selectedGroups[i].MoveGroupToPoint2D(newPosition,  groupPositions[i]);
-            }
-        }
-    }
+    //public static void MoveFormationRow(List<Unit> selectedGroups, Vector3 newPosition)
+    //{
+    //    if(selectedGroups.Count > 0)
+    //    {
+    //        Vector3[] groupPositions = Formation.GetSquareGroupPositions(new Vector3(), selectedGroups.Count, groupIndent);
+    //        for (int i = 0; i < selectedGroups.Count; i++)
+    //        {
+    //            selectedGroups[i].MoveGroupToPoint2D(newPosition,  groupPositions[i]);
+    //        }
+    //    }
+    //}
     public static Vector3[] GetSquareGroupPositions(Vector3 newPosition, int unitCount, float distance)
     {
+        return new Vector3 [1];
         int countInRow = Mathf.FloorToInt(Mathf.Sqrt(unitCount));
         Vector3[] newPositions = new Vector3[unitCount];
         float deltaX = countInRow / 2 * distance;
