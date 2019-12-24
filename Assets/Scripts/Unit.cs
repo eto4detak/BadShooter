@@ -61,6 +61,7 @@ public class Unit : MonoBehaviour
     protected virtual void Start()
     {
         command = new MoveCommand(this, transform.position);
+        agent.destination = transform.position;
     }
 
     protected virtual void Update()
@@ -192,25 +193,12 @@ public class Unit : MonoBehaviour
         for (int i = 0; i < executers.Count; i++)
         {
             executers[i].command = new MoveCommand(executers[i], newPosition);
-            // groups[i].command = new MoveCommand(groups[i], newPosition, groupPositions[i]);
         }
     }
     public void SetCommand(UnitCommand newCommand)
     {
         command = newCommand;
     }
-
-    //public void MoveGroupToPoint( Vector3 point)
-    //{
-
-    //    status = UnitStatus.Run;
-    //    Ray ray = Camera.main.ScreenPointToRay(point);
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(ray, out hit))
-    //    {
-    //        agent.destination = hit.point;
-    //    }
-    //}
 
     private void UpdateAction()
     {

@@ -36,6 +36,7 @@ class HighlightManager
 
     public static void HighlightUnits(List<Unit> units)
     {
+        return;
         Shader newShader = Shader.Find("GUI/Text Shader");
 
         foreach (var unit in units)

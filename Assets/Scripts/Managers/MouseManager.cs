@@ -2,22 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseManager : MonoBehaviour
 {
     private RaycastHit mouseHit;
     private Ray mouseRay;
-    void Start()
-    {
-        
-    }
- 
+
     void Update()
     {
-        CheckLeftClick();
-        CheckRightClick();
+        if (!IsPointerOverUIObject())
+        {
+            CheckLeftClick();
+            CheckRightClick();
+        }
     }
 
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData e = new PointerEventData(EventSystem.current);
+        e.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(e, results);
+        return results.Count > 0;
+    }
 
     private void CheckLeftClick()
     {
@@ -47,21 +55,16 @@ public class MouseManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-
             mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Unit unitTarget;
             if (Physics.Raycast(mouseRay, out mouseHit, 100))
             {
                 //attack
-
-                Unit unitTarget = mouseHit.collider.GetComponent(typeof(Unit)) as Unit;
+                unitTarget = mouseHit.collider.GetComponent<Unit>();
                 if (unitTarget)
                 {
-                    if (unitTarget)
-                    {
-                        OnClickRightUnit(unitTarget);
-                        
-                        return;
-                    }
+                    OnClickRightUnit(unitTarget);
+                    return;
                 }
 
                 //move
@@ -79,26 +82,29 @@ public class MouseManager : MonoBehaviour
 
     protected static void OnClickLeftUnit(Unit unit)
     {
+        Debug.Log("OnClickLeftUnit");
         SelectObjects.Deselect();
         SelectObjects.SelectUnit(unit);
-        GManager.gameHUD.SelectUnit(unit);
     }
+
     protected static void OnClickLeftTerrain(Terrain terrain)
     {
-        if (SelectObjects.HaveSelected())
-        {
-            SelectObjects.Deselect();
-        }
+        Debug.Log("OnClickLeftTerrain");
+        if (SelectObjects.HaveSelected()) SelectObjects.Deselect();
         GManager.gameHUD.ClearPanel();
     }
 
-    internal static void OnClickRightUnit(Unit target)
+    private static void OnClickRightUnit(Unit target)
     {
+        Debug.Log("OnClickRightUnit ");
+
         if (SelectObjects.HaveSelected())
         {
+            if (SelectObjects.selectedObjects[0] == target) return;
+
             if (GManager.pController.Team.Equals(target))
             {
-                Debug.Log("OnClickRightUnit");
+                Debug.Log("OnClickRightUnit Team");
 
                 for (int i = 0; i < SelectObjects.selectedObjects.Count; i++)
                 {
@@ -107,7 +113,7 @@ public class MouseManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("else OnClickRightUnit");
+                Debug.Log("OnClickRightUnit enemy");
 
                 for (int i = 0; i < SelectObjects.selectedObjects.Count; i++)
                 {
@@ -118,14 +124,14 @@ public class MouseManager : MonoBehaviour
         
         GManager.gameHUD.SetTarget(target);
     }
-    public static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
+
+    private static void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
     {
+        Debug.Log("OnClickRightTerrain " + SelectObjects.HaveSelected());
         if (SelectObjects.HaveSelected())
         {
             if (Physics.Raycast(Camera.main.ScreenPointToRay(newPosition), out RaycastHit hit))
-            {
                 Unit.SetMoveCommand(SelectObjects.selectedObjects, hit.point);
-            }
         }
         GManager.gameHUD.ClearTarget();
     }

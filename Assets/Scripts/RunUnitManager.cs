@@ -24,7 +24,6 @@ public class RunUnitManager : MonoBehaviour
 
     }
 
-
     public static void SetSelectedUnits(List<Unit> units)
     {
         foreach (var unit in units)
@@ -32,6 +31,7 @@ public class RunUnitManager : MonoBehaviour
             SelectObjects.SelectUnit(unit);
         }
     }
+
     public static void SetSelectedUnit(Unit unit)
     {
         SelectObjects.SelectUnit(unit);

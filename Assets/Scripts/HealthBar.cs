@@ -16,8 +16,7 @@ public class HealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateRotation();
-        UpdateRotation2();
+
     }
 
     private void UpdateRotation()
@@ -47,13 +46,9 @@ public class HealthBar : MonoBehaviour
 
     private void UpdateRotation2()
     {
-        Debug.Log("test123");
         var camPosition = Camera.main.transform.position;
-        // camPosition.
         transform.LookAt(Camera.main.transform.position);
          var wantedPos = Camera.main.WorldToViewportPoint(GManager.character.transform.position);
-        // transform.position = wantedPos;
-        //  transform.rotation.x = 
     }
 
 }

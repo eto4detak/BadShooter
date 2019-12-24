@@ -5,22 +5,26 @@ public class ShellExplosion : MonoBehaviour
     public LayerMask tankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
     public ParticleSystem ExplosionParticles;         // Reference to the particles that will play on explosion.
     public AudioSource ExplosionAudio;                // Reference to the audio that will play on explosion.
-    public float maxDamage = 100f;                    // The amount of damage done if the explosion is centred on a tank.
+    private float maxDamage = 10;                    // The amount of damage done if the explosion is centred on a tank.
     public float ExplosionForce = 1000f;              // The amount of force added to a tank at the centre of the explosion.
-    public float MaxLifeTime = 2f;                    // The time in seconds before the shell is removed.
+    public float MaxLifeTime = 10f;                    // The time in seconds before the shell is removed.
     public float ExplosionRadius = 5f;                // The maximum distance away from the explosion tanks can be and are still affected.
 
 
     private void Start ()
     {
-        Destroy (gameObject, MaxLifeTime);
+        SomeDestroy();
+    }
+
+    public virtual void SomeDestroy()
+    {
+        Destroy(gameObject, MaxLifeTime);
     }
 
 
     private void OnTriggerEnter (Collider other)
     {
         Collider[] colliders = Physics.OverlapSphere (transform.position, ExplosionRadius);
-        Debug.Log("colliders " + colliders.Length);
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -28,10 +32,7 @@ public class ShellExplosion : MonoBehaviour
 
             if (!targetRigidbody)
                 continue;
-
-            targetRigidbody.AddExplosionForce (ExplosionForce, transform.position, ExplosionRadius);
-
-
+           // targetRigidbody.AddExplosionForce (ExplosionForce, transform.position, ExplosionRadius);
             CharacterHealth targetHealth = targetRigidbody.GetComponent<CharacterHealth> ();
 
             if (!targetHealth)

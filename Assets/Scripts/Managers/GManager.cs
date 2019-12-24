@@ -5,19 +5,20 @@ using UnityEngine;
 public class GManager : MonoBehaviour
 {
     public static Character character;
+    public static float startPositionY = 5.5f;
     public static float deltaPositionY = 0.1f;
+    public static float minPositionY = -0.1f;
     public static int groupCount = 0;
     public static List<string> gameCommands = new List<string>();
     public static GMode gMode;
     public static PController pController;
-    private HumanWarrior humanWarrior;
     public static GameHUD gameHUD;
-    public static float minPositionY = -0.1f;
     public static RunUnitManager runUnitManager;
-    public static float startPositionY = 5.5f;
+
     public static SelectObjects selectObjects;
     public GameObject characterPrefab;
     public  List<CharacterManager> Characters;
+    public  WeaponPanel weaponPanel;
 
     void Awake()
     {
@@ -27,6 +28,7 @@ public class GManager : MonoBehaviour
         runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
         gMode = (GMode)FindObjectOfType(typeof(GMode));
         pController = (PController)FindObjectOfType(typeof(PController));
+        weaponPanel = (WeaponPanel)FindObjectOfType(typeof(WeaponPanel));
         gameCommands.Add("Red");
         gameCommands.Add("Blue");
     }
@@ -35,18 +37,32 @@ public class GManager : MonoBehaviour
     {
         StartWorld();
         SpawnAllCharacters();
+
+
     }
 
 
     private void SpawnAllCharacters()
     {
-        for (int i = 0; i < Characters.Count; i++)
+        CharacterInfoPanel instanciate = (CharacterInfoPanel)FindObjectOfType(typeof(CharacterInfoPanel));
+        if (instanciate)
         {
-            Characters[i].instance =
-                Instantiate(characterPrefab, Characters[i].SpawnPoint.position, Characters[i].SpawnPoint.rotation) as GameObject;
-            Characters[i].PlayerNumber = i + 1;
-            Characters[i].Setup();
+            instanciate.gameObject.SetActive(false);
+            for (int i = 0; i < Characters.Count; i++)
+            {
+                CharacterInfoPanel healthPanel = null;
+                    healthPanel = Instantiate(instanciate, instanciate.transform.position + new Vector3(i * 100, 0, 0),
+                        Quaternion.identity, gameHUD.transform.parent);
+                    healthPanel.gameObject.SetActive(true);
+                   // healthPanel.Setup(Characters[i].);
+
+                Characters[i].instance =
+                    Instantiate(characterPrefab, Characters[i].SpawnPoint.position, Characters[i].SpawnPoint.rotation) as GameObject;
+                Characters[i].PlayerNumber = i + 1;
+                Characters[i].Setup(healthPanel);
+            }
         }
+
     }
 
 

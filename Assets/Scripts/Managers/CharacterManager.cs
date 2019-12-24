@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 [Serializable]
-
 public class CharacterManager
 {
     public Color playerColor;
@@ -13,24 +13,23 @@ public class CharacterManager
     [HideInInspector] public string ColoredPlayerText;
     [HideInInspector] public GameObject instance;
     [HideInInspector] public int Wins;
+    [HideInInspector] public Unit unit;
 
 
     private CharacterMovement Movement;
     private CharacterShooting shooting;
-    private Unit unit;
+    private CharacterHealth health;
     private GameObject CanvasGameObject;
 
         
-    public void Setup()
+    public void Setup(CharacterInfoPanel healthSlider)
     {
         Movement = instance.GetComponent<CharacterMovement>();
         shooting = instance.GetComponent<CharacterShooting>();
+        health = instance.GetComponent<CharacterHealth>();
+        health.SetData(healthSlider);
         unit = instance.GetComponent<Unit>();
         unit.manager = this;
-        // CanvasGameObject = Instance.GetComponentInChildren<Canvas>().gameObject;
-
-        // Movement.PlayerNumber = PlayerNumber;
-        // Shooting.PlayerNumber = PlayerNumber;
 
         ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(playerColor) + ">PLAYER " + PlayerNumber + "</color>";
 
@@ -43,10 +42,18 @@ public class CharacterManager
     }
 
 
+    public void ChangeWeapon(Weapon weapon)
+    {
+        shooting.SelectWeapon(weapon);
+    }
+
+
     public void Fire(GameObject newTarget)
     {
         shooting.SetPermametFire(newTarget);
     }
+
+
     public void Move(Vector3 newPosition)
     {
         if (unit == null) return;
@@ -62,7 +69,6 @@ public class CharacterManager
 
         CanvasGameObject.SetActive(false);
     }
-
 
     public void EnableControl()
     {
@@ -81,4 +87,13 @@ public class CharacterManager
         instance.SetActive(false);
         instance.SetActive(true);
     }
+
+
+    public List<Weapon> GetWeapons()
+    {
+        if(shooting)return shooting.weapons;
+        return null;
+    }
+
+
 }

@@ -49,7 +49,6 @@ public class MoveCommand : UnitCommand
         Executer = paramGroup;
         NewPosition = paramNewPosition;
         Executer.manager.Move(NewPosition);
-       // Executer.MoveToPoint3D(NewPosition);
         DoCommand();
     }
 
