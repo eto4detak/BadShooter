@@ -8,37 +8,68 @@ public class CharacterShooting : MonoBehaviour
     public List<Weapon> weapons;
 
     [HideInInspector] public Weapon selectWeapon;
-    [HideInInspector] public GameObject target;
+    [HideInInspector] public Collider target;
+
+    private float rotSpeed = 5f;
+
+    private void Awake()
+    {
+        SetupWeapons();
+    }
 
     private void Start ()
     {
-        if (weapons.Count > 0) SelectWeapon(weapons[0]);
-        for (int i = 0; i < weapons.Count; i++)
-        {
-            weapons[i].owner = this;
-        }
+
     }
 
-    private void Update ()
+    private void Update()
     {
-        if (target != null)
-        {
-            selectWeapon.FireToTarget();
-        }
+        TryShoot();
     }
 
     public void SelectWeapon(Weapon weapon)
     {
-        //  if (weapons.Find(x => x.Equals(weapon)) )
-        //  {
         selectWeapon = weapon;
-            selectWeapon.fireTransform = fireTransform;
-       // }
+        selectWeapon.fireTransform = fireTransform;
     }
 
-    public void SetPermametFire(GameObject newTarget)
+    public void SetPermametFire(Collider newTarget)
     {
         target = newTarget;
+    }
+
+    private void SetupWeapons()
+    {
+        List<Weapon> newWeapons = new List<Weapon>();
+        for (int i = 0; i < weapons.Count; i++)
+        {
+            newWeapons.Add(Instantiate(weapons[i], fireTransform.position, fireTransform.rotation, transform));
+            newWeapons[i].owner = this;
+        }
+        weapons = newWeapons;
+        if (weapons.Count > 0) SelectWeapon(weapons[0]);
+    }
+
+    private void TryShoot()
+    {
+        if (target != null)
+        {
+            LookAtTarget();
+            if (selectWeapon.IsOnSight(target))
+            {
+                selectWeapon.FireToTarget();
+            }
+            else
+            {
+                selectWeapon.RotateAtTarget(target);
+            }
+        }
+    }
+
+    private void LookAtTarget()
+    {
+        transform.rotation = Quaternion.Slerp(transform.rotation,
+            Quaternion.LookRotation(target.transform.position - transform.position), rotSpeed * Time.deltaTime);
     }
 
     private void Fire ()

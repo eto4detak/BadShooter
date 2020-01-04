@@ -5,11 +5,7 @@ using UnityEngine;
 
 public class SelectObjects : MonoBehaviour
 {
-    public static List<Unit> allowedSelectObj = new List<Unit>(); // массив всех юнитов, которых мы можем выделить
-    public static List<Unit> selectedObjects; // выделенные объекты
-    public static List<Unit> selectedGroups; // выделенные объекты
-    public static WeaponPanel weaponPanel;
-
+    public WeaponPanel weaponPanel;
     public GUISkin skin;
 
     private Rect rect;
@@ -17,48 +13,61 @@ public class SelectObjects : MonoBehaviour
     private Vector2 startPos;
     private Vector2 endPos;
     private float minY = 0;
+    private List<Unit> allowedSelectObj;
+    private List<Unit> selected = new List<Unit>(); // выделенные объекты
+
+    #region Singleton
+    static protected SelectObjects s_Instance;
+    static public SelectObjects instance { get { return s_Instance; } }
+
+    public List<Unit> Selected { get => selected; }
+    #endregion
 
     void Awake()
     {
+        #region Singleton
+        if (s_Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        s_Instance = this;
+        #endregion
+
+        allowedSelectObj = Unit.allUnits;
         weaponPanel = (WeaponPanel)FindObjectOfType(typeof(WeaponPanel));
-        selectedObjects = new List<Unit>();
-        selectedGroups = new List<Unit>();
     }
+
+
 
     void OnGUI()
     {
         TryDrawSelectBox();
     }
-    public static void ClearSelected()
+
+
+    public void ClearSelected()
     {
-        selectedObjects.Clear();
-        selectedGroups.Clear();
+        Selected.Clear();
         HighlightManager.Clear();
-       // weaponPanel.RemoveTarget();
     }
 
-    public static bool HaveSelected()
+    public bool HaveSelected()
     {
-        if (selectedObjects.Count > 0 ) return true;
+        if (Selected.Count > 0 ) return true;
         return false;
     }
 
-    public static void SetAllowed(Unit obj)
+    public void SelectUnit(Unit unit)
     {
-        allowedSelectObj.Add(obj);
-    }
-
-    public static void SelectUnit(Unit unit)
-    {
-        selectedObjects.Add(unit);
+        Selected.Add(unit);
         HighlightSelected();
         weaponPanel.SetTarget(unit.manager);
     }
 
-    public static void Deselect()
+    public void Deselect()
     {
-        selectedObjects.Clear();
-        selectedGroups.Clear();
+        Selected.Clear();
         HighlightManager.Clear();
         weaponPanel.RemoveTarget();
     }
@@ -84,10 +93,10 @@ public class SelectObjects : MonoBehaviour
         }
         return point;
     }
-    private static void HighlightSelected()
+    private void HighlightSelected()
     {
         List<Unit> unitForHighlight = new List<Unit>();
-        unitForHighlight.AddRange(selectedObjects);
+        unitForHighlight.AddRange(Selected);
         HighlightManager.HighlightUnits(unitForHighlight);
     }
 
@@ -95,7 +104,7 @@ public class SelectObjects : MonoBehaviour
     bool CheckUnit(Unit unit)
     {
         bool result = false;
-        foreach (Unit u in selectedObjects)
+        foreach (Unit u in Selected)
         {
             if (u == unit) result = true;
         }
@@ -121,7 +130,7 @@ public class SelectObjects : MonoBehaviour
 
             if (rect.Contains(tmp)) // проверка, находится-ли текущий объект в рамке
             {
-                if (selectedObjects.Count == 0)
+                if (Selected.Count == 0)
                 {
                     SelectUnit(allowedSelectObj[j]);
                 }
@@ -156,8 +165,7 @@ public class SelectObjects : MonoBehaviour
             endPos = Input.mousePosition;
             if (startPos == endPos) return;
             endPos = GetAvailablePosition(endPos);
-            selectedObjects.Clear();
-            selectedGroups.Clear();
+            Selected.Clear();
 
             DrawSelectBox();
         }

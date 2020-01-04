@@ -2,11 +2,8 @@ using UnityEngine;
 
 public class ShellBullet : MonoBehaviour
 {
-    public ParticleSystem ExplosionParticles;
-    public AudioSource ExplosionAudio;
+    public float lifeTime = 10f;
     private float maxDamage = 1;
-    public float ExplosionForce = 1000f;
-    public float MaxLifeTime = 30f;
 
     private void Start ()
     {
@@ -15,15 +12,13 @@ public class ShellBullet : MonoBehaviour
 
     public virtual void SomeDestroy()
     {
-        Destroy(gameObject, MaxLifeTime);
+        Destroy(gameObject, lifeTime);
     }
 
     private void OnCollisionEnter(Collision other)
     {
         CharacterHealth targetHealth = other.collider.GetComponent<CharacterHealth> ();
-        if (!targetHealth) return;
-
-        targetHealth.TakeDamage (maxDamage);
+        if (targetHealth) targetHealth.TakeDamage(maxDamage);
         Destroy (gameObject);
     }
 

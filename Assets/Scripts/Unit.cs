@@ -1,31 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Unit : MonoBehaviour
 {
+    [HideInInspector] public static List<Unit> allUnits = new List<Unit>();
+    [HideInInspector] public static GameObject prefab;
     [HideInInspector] public float armor = 1f;
     [HideInInspector] public float aggression = 0f;
     [HideInInspector] public float attackRadius = 2f;
     [HideInInspector] public float domage = 1f;
     [HideInInspector] public float maxHealth = 100f;
     [HideInInspector] public float speed = 2f;
-
     [HideInInspector] public bool canDamage = true;
     [HideInInspector] public bool canRun = true;
     [HideInInspector] public float jumpForce = 20.0f;
     [HideInInspector] public bool isGrounded = true;
-
     [HideInInspector] public float morale = 1f;
     [HideInInspector] public float maxMorale = 1f;
     [HideInInspector] public float maxAggression = 1f;
-
-    [HideInInspector] public static GameObject prefab;
-
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public NavMeshAgent agent;
-
     [HideInInspector] public CharacterManager manager;
+    [HideInInspector] public Collider body;
 
     private float health = 100f;
 
@@ -52,9 +50,15 @@ public class Unit : MonoBehaviour
 
     public virtual void Awake()
     {
-        SelectObjects.SetAllowed(this);
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
+        body = GetComponentInChildren<Collider>();
+        allUnits.Add(this);
+    }
+
+    private void OnDestroy()
+    {
+        allUnits.Remove(this);
     }
 
 
@@ -68,54 +72,33 @@ public class Unit : MonoBehaviour
     {
         CheckErrorPositionY();
         UpdateAction();
-       // command.DoCommand();
-    }
-
-    void OnMouseDown()
-    {
-
-    }
-
-    void OnMouseExit()
-    {
-        //GetComponentInChildren<Renderer>().material.color = Color.white;
-    }
-
-
-    private void OnCollisionEnter(Collision other)
-    {
-       
     }
 
     private void OnCollisionStay(Collision other)
     {
         Unit target = other.gameObject.GetComponent<Unit>();
-      //  if (target == null || target.group == group) return;
-       // group.command.OnStay(target);
     }
-
-
-
 
     public virtual Sprite GetSprite()
     {
        return Resources.Load<Sprite>("Sprite/unit");
+    }
+    public void Damage(Unit target, float val)
+    {
+        target.Health = Mathf.Max(target.Health - val, 0);
     }
 
     protected virtual void AimCounterpoise()
     {
         transform.position = Vector3.MoveTowards(transform.position, (Vector3)NewPosition, speed * Time.deltaTime);
     }
+
     private void CheckErrorPositionY()
     {
         if (transform.position.y < GManager.minPositionY)
         {
             transform.position = new Vector3(transform.position.x, GManager.startPositionY, transform.position.z);
         }
-    }
-    public void Damage(Unit target, float val)
-    {
-        target.Health = Mathf.Max(target.Health - val, 0);
     }
 
     protected virtual void Die()
@@ -180,7 +163,6 @@ public class Unit : MonoBehaviour
             agent.destination = hit.point;
         }
     }
-
 
     public void MoveToPoint3D(Vector3 newPosition)
     {

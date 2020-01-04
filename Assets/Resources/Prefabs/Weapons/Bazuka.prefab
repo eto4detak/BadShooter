@@ -50,4 +50,4 @@ MonoBehaviour:
   frontImage: {fileID: 21300000, guid: 721b09fbf9ff0c542abdd42261e8e663, type: 3}
   fireTransform: {fileID: 0}
   owner: {fileID: 0}
-  launchSpeed: 20
+  launchSpeed: 35

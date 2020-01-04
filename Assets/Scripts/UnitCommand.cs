@@ -30,7 +30,7 @@ public class AttackCommand : UnitCommand
     {
         if(Target)
         {
-            Executer.manager.Fire(Target.gameObject);
+            Executer.manager.Fire(Target.body);
             //Executer.MoveToPoint3D(Target.transform.position);
         }
     }

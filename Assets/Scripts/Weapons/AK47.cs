@@ -4,40 +4,51 @@ using UnityEngine;
 
 public class AK47 : Weapon
 {
-    private float currentRechargeTime = 0f;
-    private float rechargeTime = 0.5f;
-    private float rotSpeed = 5f;
-    private bool fired;
-
     public float launchSpeed = 100f;
+    private float currentRechargeTime = 0f;
+    private float rechargeTime = 0.1f;
+    private bool firing;
 
     public override void Fire()
     {
-        fired = true;
+        firing = true;
         currentRechargeTime = 0f;
-        Rigidbody shellInstance =
-            Instantiate(shell, fireTransform.position, fireTransform.rotation) as Rigidbody;
+        Rigidbody shellInstance = Instantiate(shell, fireTransform.position, fireTransform.rotation);
         shellInstance.velocity = launchSpeed * fireTransform.forward;
-
         shellInstance.gameObject.layer = owner.gameObject.layer;
     }
 
-    public void SetPermametFire(GameObject newTarget)
+    private void Update()
+    {
+        if(fireTransform)
+        transform.rotation = fireTransform.rotation;
+    }
+
+    public void SetPermametFire(Collider newTarget)
     {
         owner.target = newTarget;
     }
-
+    
     public override void FireToTarget()
     {
-        owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, 
-            Quaternion.LookRotation(owner.target.transform.position - owner.transform.position), rotSpeed * Time.deltaTime);
-        if (!fired || currentRechargeTime > rechargeTime)
+        if (!firing && currentRechargeTime > rechargeTime)
         {
             Fire();
         }
         else
         {
             currentRechargeTime += Time.deltaTime;
+            firing = false;
         }
     }
+
+    public override bool IsOnSight(Collider target)
+    {
+        RaycastHit hit;
+        Physics.Raycast(fireTransform.position, fireTransform.forward, out hit);
+        if (hit.collider != null && hit.collider.Equals(target) ) return true;
+        return false;
+    }
+
+
 }

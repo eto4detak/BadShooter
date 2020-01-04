@@ -17,9 +17,6 @@ public class MenuManager : MonoBehaviour
         
     }
 
-
-
-
     public void NawGame()
     {
         SceneManager.LoadScene(1);

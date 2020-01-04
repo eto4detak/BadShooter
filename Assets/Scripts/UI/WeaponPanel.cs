@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class WeaponPanel : MonoBehaviour
 {
@@ -47,21 +46,10 @@ public class WeaponPanel : MonoBehaviour
 
     public void RemoveTarget()
     {
-
-        Debug.Log("RemoveTarget");
-
         gameObject.SetActive(false);
         target = null;
     }
 
-    public void Empty()
-    {
-
-        Debug.Log("Empty");
-
-        EventSystem.current.IsPointerOverGameObject();
-
-    }
 
     private void UpdateWeaponItems()
     {

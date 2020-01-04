@@ -9,36 +9,43 @@ public class CharacterManager
 {
     public Color playerColor;
     public Transform SpawnPoint;
-    [HideInInspector] public int PlayerNumber;
     [HideInInspector] public string ColoredPlayerText;
     [HideInInspector] public GameObject instance;
-    [HideInInspector] public int Wins;
-    [HideInInspector] public Unit unit;
 
-
-    private CharacterMovement Movement;
+    private Unit unit;
+    private CharacterMovement movement;
     private CharacterShooting shooting;
     private CharacterHealth health;
     private GameObject CanvasGameObject;
 
-        
-    public void Setup(CharacterInfoPanel healthSlider)
+    public CharacterManager()
     {
-        Movement = instance.GetComponent<CharacterMovement>();
-        shooting = instance.GetComponent<CharacterShooting>();
-        health = instance.GetComponent<CharacterHealth>();
-        health.SetData(healthSlider);
-        unit = instance.GetComponent<Unit>();
+
+    }
+
+    public void Setup(GameObject resInstance = null)
+    {
+        if (resInstance == null) resInstance = instance;
+        movement = resInstance.GetComponent<CharacterMovement>();
+        shooting = resInstance.GetComponent<CharacterShooting>();
+        health = resInstance.GetComponent<CharacterHealth>();
+        
+        unit = resInstance.GetComponent<Unit>();
         unit.manager = this;
 
-        ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(playerColor) + ">PLAYER " + PlayerNumber + "</color>";
+        //ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(playerColor) + ">PLAYER " + PlayerNumber + "</color>";
 
-        MeshRenderer[] renderers = instance.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers = resInstance.GetComponentsInChildren<MeshRenderer>();
 
         for (int i = 0; i < renderers.Length; i++)
         {
             renderers[i].material.color = playerColor;
         }
+    }
+
+    public void SetupHealthPanel(CharacterInfoPanel healthPanel)
+    {
+        health.SetData(healthPanel);
     }
 
 
@@ -48,7 +55,7 @@ public class CharacterManager
     }
 
 
-    public void Fire(GameObject newTarget)
+    public void Fire(Collider newTarget)
     {
         shooting.SetPermametFire(newTarget);
     }
@@ -64,7 +71,7 @@ public class CharacterManager
 
     public void DisableControl()
     {
-        Movement.enabled = false;
+        movement.enabled = false;
         shooting.enabled = false;
 
         CanvasGameObject.SetActive(false);
@@ -72,7 +79,7 @@ public class CharacterManager
 
     public void EnableControl()
     {
-        Movement.enabled = true;
+        movement.enabled = true;
         shooting.enabled = true;
 
         CanvasGameObject.SetActive(true);

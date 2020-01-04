@@ -7,81 +7,55 @@ using System;
 public class RunUnitManager : MonoBehaviour
 {
     HighlightManager highlight = new HighlightManager();
-    
+    SelectObjects selecting;
+
     private void Awake()
     {
        
     }
 
-
     void Start()
     {
-
+        selecting = SelectObjects.instance;
     }
 
-    void Update()
-    {
 
-    }
 
-    public static void SetSelectedUnits(List<Unit> units)
+    public void SetSelectedUnits(List<Unit> units)
     {
         foreach (var unit in units)
         {
-            SelectObjects.SelectUnit(unit);
+            selecting.SelectUnit(unit);
         }
     }
 
-    public static void SetSelectedUnit(Unit unit)
+    public void SetSelectedUnit(Unit unit)
     {
-        SelectObjects.SelectUnit(unit);
+        selecting.SelectUnit(unit);
     }
-    public static void RemoveSelectedUnit(Unit unit)
+    public void RemoveSelectedUnit(Unit unit)
     {
-        SelectObjects.SelectUnit(unit);
+        selecting.SelectUnit(unit);
     }
 
-
-    //private void FindGameObjectUnderMouse()
-    //{
-    //    if (Input.GetMouseButtonUp(0))
-    //    {
-    //        SelectObjects.Deselect();
-    //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //        RaycastHit hit;
-    //        if (Physics.Raycast(ray, out hit))
-    //        {
-    //            if (hit.collider != null  )
-    //            {
-    //                Unit unit = hit.collider.gameObject.GetComponent<Unit>();
-    //                if (unit != null)
-    //                {
-    //                    SelectObjects.selectedObjects.Add(unit);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
-    internal static void UnitMouseOverHandler(Unit unit)
+    internal void UnitMouseOverHandler(Unit unit)
     {
         if (Input.GetMouseButton(0))
         {
-            SelectObjects.Deselect();
-            SelectObjects.SelectUnit(unit);
+            selecting.Deselect();
+            selecting.SelectUnit(unit);
         }
         if (Input.GetMouseButtonDown(1))
         {
-            if(SelectObjects.selectedObjects.Count > 0)
+            if(selecting.Selected.Count > 0)
             {
                 List<Unit> targets = new List<Unit>();
                 targets.Add(unit);
-                foreach (var attacking in SelectObjects.selectedObjects)
+                foreach (var attacking in selecting.Selected)
                 {
 
                     if (attacking != null)
                     {
-                        Debug.Log(attacking.name + "attacing 111 " + attacking.name);
                         attacking.SetAttackTarget(targets);
                     }
                 }
@@ -93,26 +67,16 @@ public class RunUnitManager : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(1))
         {
-            Debug.Log("run " + this.name);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                foreach (var selected in SelectObjects.selectedObjects)
+                foreach (var selected in selecting.Selected)
                 {
                     selected.agent.destination = hit.point;
                 }
             }
         }
-
-        //if (agent.velocity.magnitude > 2f)
-        //{
-        //    animator.SetBool("walk", true);
-        //}
-        //else
-        //{
-        //    animator.SetBool("walk", false);
-        //}
     }
 
     void OnDrawGizmosSelected1111()

@@ -14,11 +14,14 @@ public class GManager : MonoBehaviour
     public static PController pController;
     public static GameHUD gameHUD;
     public static RunUnitManager runUnitManager;
+    public  SelectObjects selectObjects;
 
-    public static SelectObjects selectObjects;
+    public Transform spawnPoint;
     public GameObject characterPrefab;
-    public  List<CharacterManager> Characters;
-    public  WeaponPanel weaponPanel;
+    public List<CharacterManager> Characters;
+    public WeaponPanel weaponPanel;
+
+    private List<Unit> units;
 
     void Awake()
     {
@@ -31,14 +34,13 @@ public class GManager : MonoBehaviour
         weaponPanel = (WeaponPanel)FindObjectOfType(typeof(WeaponPanel));
         gameCommands.Add("Red");
         gameCommands.Add("Blue");
+        units = Unit.allUnits;
     }
 
     void Start()
     {
-        StartWorld();
+        SetupUnitManager();
         SpawnAllCharacters();
-
-
     }
 
 
@@ -50,52 +52,33 @@ public class GManager : MonoBehaviour
             instanciate.gameObject.SetActive(false);
             for (int i = 0; i < Characters.Count; i++)
             {
-                CharacterInfoPanel healthPanel = null;
-                    healthPanel = Instantiate(instanciate, instanciate.transform.position + new Vector3(i * 100, 0, 0),
-                        Quaternion.identity, gameHUD.transform.parent);
-                    healthPanel.gameObject.SetActive(true);
-                   // healthPanel.Setup(Characters[i].);
+                CharacterInfoPanel healthPanel = Instantiate(instanciate, instanciate.transform.position + new Vector3(i * 100, 0, 0),
+                    Quaternion.identity, gameHUD.transform.parent);
+                healthPanel.gameObject.SetActive(true);
 
                 Characters[i].instance =
-                    Instantiate(characterPrefab, Characters[i].SpawnPoint.position, Characters[i].SpawnPoint.rotation) as GameObject;
-                Characters[i].PlayerNumber = i + 1;
-                Characters[i].Setup(healthPanel);
+                    Instantiate(characterPrefab, spawnPoint.position, spawnPoint.rotation) as GameObject;
+                Characters[i].Setup();
+                Characters[i].SetupHealthPanel(healthPanel);
             }
         }
-
     }
 
 
-    public void CreateHumanWarrior()
+    private void SetupUnitManager()
     {
-        GameObject prefab = HumanWarrior.GetPrefab();
-        if (prefab != null)
+        for (int i = 0; i < units.Count; i++)
         {
-            for (int i = 0; i < 2; i++)
-            {
-                Vector3 position = transform.position;
-                position.x += i * 1.0f;
-                position.y = 5f;
-                GameObject prefabWrapper =  Instantiate(prefab, position, Quaternion.identity);
-                HumanWarrior warrion = prefabWrapper.GetComponent<HumanWarrior>();
-
-                warrion.NewPosition = new Vector3(10f, 5f, 10f);
-            }
+            CharacterManager cm = new CharacterManager();
+            cm.Setup(units[i].gameObject);
         }
     }
+
 
     private void SetSettings()
     {
         RectTransform rt = gameHUD.GetComponent(typeof(RectTransform)) as RectTransform;
         selectObjects.SetForbiddenPosition(rt.offsetMax);
-    }
-
-
-    private void StartWorld()
-    {
-        
-
-
     }
 
 }
