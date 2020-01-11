@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GManager : MonoBehaviour
 {
-    public static Character character;
     public static float startPositionY = 5.5f;
     public static float deltaPositionY = 0.1f;
     public static float minPositionY = -0.1f;
@@ -13,27 +12,24 @@ public class GManager : MonoBehaviour
     public static GMode gMode;
     public static PController pController;
     public static GameHUD gameHUD;
-    public static RunUnitManager runUnitManager;
-    public  SelectObjects selectObjects;
 
+    public SelectObjects selectObjects;
     public Transform spawnPoint;
     public GameObject characterPrefab;
     public List<CharacterManager> Characters;
     public WeaponPanel weaponPanel;
+    public PassiveUnitPanel passivePanel;
 
     private List<Unit> units;
 
     void Awake()
     {
         gameHUD = (GameHUD)FindObjectOfType(typeof(GameHUD));
-        character = (Character)FindObjectOfType(typeof(Character));
         selectObjects = (SelectObjects)FindObjectOfType(typeof(SelectObjects));
-        runUnitManager = (RunUnitManager)FindObjectOfType(typeof(RunUnitManager));
         gMode = (GMode)FindObjectOfType(typeof(GMode));
         pController = (PController)FindObjectOfType(typeof(PController));
         weaponPanel = (WeaponPanel)FindObjectOfType(typeof(WeaponPanel));
-        gameCommands.Add("Red");
-        gameCommands.Add("Blue");
+        passivePanel = (PassiveUnitPanel)FindObjectOfType(typeof(PassiveUnitPanel));
         units = Unit.allUnits;
     }
 

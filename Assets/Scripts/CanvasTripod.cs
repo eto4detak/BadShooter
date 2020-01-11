@@ -9,7 +9,7 @@ public class CanvasTripod : MonoBehaviour
     private bool scale = false;
     private Vector3 initialScale;
 
-    private Unit currentUnit;
+    private CharacterHealth target;
     [Tooltip("Image component displaying health left")]
     public Image healthBarImage;
     [Tooltip("The floating healthbar pivot transform")]
@@ -20,7 +20,7 @@ public class CanvasTripod : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        currentUnit = gameObject.GetComponentInParent<Unit>();
+        target = gameObject.GetComponentInParent<CharacterHealth>();
         cam = Camera.main.gameObject;
         initialScale = transform.localScale;
     }
@@ -33,9 +33,9 @@ public class CanvasTripod : MonoBehaviour
 
     private void UpdateValues()
     {
-        if (currentUnit != null)
+        if (target != null)
         {
-            healthBarImage.fillAmount = currentUnit.Health / currentUnit.maxHealth;
+            healthBarImage.fillAmount = target.CurrentHealth / target.maxHealth;
 
             if (hideFullHealthBar)
             {

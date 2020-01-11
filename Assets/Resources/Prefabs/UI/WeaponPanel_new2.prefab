@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 7883405530550240001}
   - component: {fileID: 1768361828941653597}
   m_Layer: 5
-  m_Name: WeaponPanel
+  m_Name: WeaponPanel_new2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -390,7 +390,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 7.8651686, y: 0}
+  m_AnchoredPosition: {x: 18.25381, y: 0}
   m_SizeDelta: {x: -106.79999, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3442792560431106820
@@ -650,7 +650,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 4932050671051849603}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.60674554
+  m_Size: 0.9973478
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -4,18 +4,10 @@ using UnityEngine;
 
 public class AK47 : Weapon
 {
-    public float launchSpeed = 100f;
-    private float currentRechargeTime = 0f;
-    private float rechargeTime = 0.1f;
-    private bool firing;
-
-    public override void Fire()
+    protected new void Awake()
     {
-        firing = true;
-        currentRechargeTime = 0f;
-        Rigidbody shellInstance = Instantiate(shell, fireTransform.position, fireTransform.rotation);
-        shellInstance.velocity = launchSpeed * fireTransform.forward;
-        shellInstance.gameObject.layer = owner.gameObject.layer;
+        sharpShooting = 6f;
+        offsetMagnitude = standartOffset / sharpShooting;
     }
 
     private void Update()
@@ -24,11 +16,12 @@ public class AK47 : Weapon
         transform.rotation = fireTransform.rotation;
     }
 
-    public void SetPermametFire(Collider newTarget)
+
+    public override void Fire()
     {
-        owner.target = newTarget;
+        base.Fire();
     }
-    
+
     public override void FireToTarget()
     {
         if (!firing && currentRechargeTime > rechargeTime)
@@ -42,7 +35,14 @@ public class AK47 : Weapon
         }
     }
 
-    public override bool IsOnSight(Collider target)
+
+    public void SetPermametFire(Collider newTarget)
+    {
+        owner.target = newTarget;
+    }
+    
+
+    public override bool CheckOnSight(Collider target)
     {
         RaycastHit hit;
         Physics.Raycast(fireTransform.position, fireTransform.forward, out hit);

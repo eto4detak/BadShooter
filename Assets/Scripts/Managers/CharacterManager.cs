@@ -8,98 +8,76 @@ using UnityEngine.UI;
 public class CharacterManager
 {
     public Color playerColor;
-    public Transform SpawnPoint;
-    [HideInInspector] public string ColoredPlayerText;
     [HideInInspector] public GameObject instance;
 
     private Unit unit;
     private CharacterMovement movement;
     private CharacterShooting shooting;
     private CharacterHealth health;
-    private GameObject CanvasGameObject;
 
-    public CharacterManager()
-    {
-
-    }
+    public CharacterShooting Shooting { get => shooting; private set => shooting = value; }
+    public CharacterMovement Movement { get => movement; private set => movement = value; }
+    public CharacterHealth Health { get => health; private set => health = value; }
 
     public void Setup(GameObject resInstance = null)
     {
         if (resInstance == null) resInstance = instance;
-        movement = resInstance.GetComponent<CharacterMovement>();
-        shooting = resInstance.GetComponent<CharacterShooting>();
-        health = resInstance.GetComponent<CharacterHealth>();
+        Movement = resInstance.GetComponent<CharacterMovement>();
+        Shooting = resInstance.GetComponent<CharacterShooting>();
+        Health = resInstance.GetComponent<CharacterHealth>();
         
         unit = resInstance.GetComponent<Unit>();
         unit.manager = this;
 
-        //ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(playerColor) + ">PLAYER " + PlayerNumber + "</color>";
-
         MeshRenderer[] renderers = resInstance.GetComponentsInChildren<MeshRenderer>();
-
         for (int i = 0; i < renderers.Length; i++)
         {
             renderers[i].material.color = playerColor;
         }
     }
 
-    public void SetupHealthPanel(CharacterInfoPanel healthPanel)
+    public List<Weapon> GetWeapons()
     {
-        health.SetData(healthPanel);
+        if (Shooting) return Shooting.weapons;
+        return null;
     }
 
+    public void ToGiveWeapon(CharacterManager newOwner, Weapon weapon)
+    {
+        Shooting.RemoveWeapon(weapon);
+        newOwner.Shooting.AddWeapon(weapon);
+        newOwner.unit.faction = Teams.Player;
+    }
+
+    public void SetupHealthPanel(CharacterInfoPanel healthPanel)
+    {
+        Health.SetData(healthPanel);
+    }
 
     public void ChangeWeapon(Weapon weapon)
     {
-        shooting.SelectWeapon(weapon);
+        Shooting.SelectWeapon(weapon);
     }
-
 
     public void Fire(Collider newTarget)
     {
-        shooting.SetPermametFire(newTarget);
+        Shooting.SetPermametFire(newTarget);
     }
 
-
-    public void Move(Vector3 newPosition)
+    public void MoveToCameraPoint(Vector3 newPosition)
+    {
+        Movement.MoveToCameraPoint(newPosition);
+    }
+    public void OnlyMove(Vector3 newPosition)
     {
         if (unit == null) return;
         Fire(null);
-        unit.agent.destination = newPosition;
+        Movement.MoveToPoint(newPosition);
     }
 
-
-    public void DisableControl()
+    public void Move(Vector3 newPosition)
     {
-        movement.enabled = false;
-        shooting.enabled = false;
-
-        CanvasGameObject.SetActive(false);
-    }
-
-    public void EnableControl()
-    {
-        movement.enabled = true;
-        shooting.enabled = true;
-
-        CanvasGameObject.SetActive(true);
-    }
-
-
-    public void Reset()
-    {
-        instance.transform.position = SpawnPoint.position;
-        instance.transform.rotation = SpawnPoint.rotation;
-
-        instance.SetActive(false);
-        instance.SetActive(true);
-    }
-
-
-    public List<Weapon> GetWeapons()
-    {
-        if(shooting)return shooting.weapons;
-        return null;
+        Movement.MoveToPoint(newPosition);
     }
 
 

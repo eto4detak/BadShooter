@@ -63,14 +63,14 @@ public class MouseManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Unit unitTarget;
+            CharacterHealth unitTarget;
             if (Physics.Raycast(mouseRay, out mouseHit, 100))
             {
                 //attack
-                unitTarget = mouseHit.collider.GetComponent<Unit>();
+                unitTarget = mouseHit.collider.GetComponent<CharacterHealth>();
                 if (unitTarget)
                 {
-                    OnClickRightUnit(unitTarget);
+                    OnClickRightObject(unitTarget);
                     return;
                 }
 
@@ -89,35 +89,26 @@ public class MouseManager : MonoBehaviour
 
     protected void OnClickLeftUnit(Unit unit)
     {
-        Debug.Log("OnClickLeftUnit");
         selecting.Deselect();
         selecting.SelectUnit(unit);
     }
 
     protected void OnClickLeftTerrain(Terrain terrain)
     {
-        Debug.Log("OnClickLeftTerrain");
         if (selecting.HaveSelected()) selecting.Deselect();
         GManager.gameHUD.ClearPanel();
     }
 
-    private void OnClickRightUnit(Unit target)
+    private void OnClickRightObject(CharacterHealth target)
     {
-        Debug.Log("OnClickRightUnit ");
         if (selecting.HaveSelected())
         {
+
+
             if (selecting.Selected[0] == target) return;
-            if (GManager.pController.Team.Equals(target))
+            Unit uTarget = target.GetComponent<Unit>();
+            if (!uTarget || uTarget.IsHostile(selecting.Selected[0]))
             {
-                Debug.Log("OnClickRightUnit Team");
-                for (int i = 0; i < selecting.Selected.Count; i++)
-                {
-                    selecting.Selected[i].SetCommand(new PursueCommand(selecting.Selected[i],target));
-                }
-            }
-            else
-            {
-                Debug.Log("OnClickRightUnit enemy");
                 for (int i = 0; i < selecting.Selected.Count; i++)
                 {
                     selecting.Selected[i].SetCommand(new AttackCommand(selecting.Selected[i], target));
@@ -127,13 +118,16 @@ public class MouseManager : MonoBehaviour
         GManager.gameHUD.SetTarget(target);
     }
 
+
     private void OnClickRightTerrain(Terrain terrain, Vector3 newPosition)
     {
-        Debug.Log("OnClickRightTerrain " + selecting.HaveSelected());
+
         if (selecting.HaveSelected())
         {
             if (Physics.Raycast(Camera.main.ScreenPointToRay(newPosition), out RaycastHit hit))
+            {
                 Unit.SetMoveCommand(selecting.Selected, hit.point);
+            }
         }
         GManager.gameHUD.ClearTarget();
     }

@@ -1,81 +1,88 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class CharacterMovement : MonoBehaviour
 {
-    public int PlayerNumber = 1;
-    public float Speed = 12f;
-    public float TurnSpeed = 180f;
-    public AudioSource MovementAudio;
-    public AudioClip EngineIdling;
-    public AudioClip EngineDriving;
-    public float PitchRange = 0.2f;
+    public Animator animator;
+    public NavMeshAgent agent;
+    public float turnSmoothing = 15f;
+    public float speedDampTime = 0.1f;
+    public float slowingSpeed = 0.175f;
+    public float turnSpeedThreshold = 0.5f;
+    public float inputHoldDelay = 0.5f;
 
-    /*
-    private string MovementAxisName;     
-    private string TurnAxisName;         
-    private Rigidbody Rigidbody;         
-    private float MovementInputValue;    
-    private float TurnInputValue;        
-    private float OriginalPitch;         
-
+    private Vector3 destinationPosition;
+    private bool handleInput = true;
+    private WaitForSeconds inputHoldWait;
+    private readonly int hashSpeedPara = Animator.StringToHash("Speed");
+    private const float stopDistanceProportion = 0.1f;
+    private const float navMeshSampleDistance = 4f;
 
     private void Awake()
     {
-        Rigidbody = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
     }
-
-
-    private void OnEnable ()
-    {
-        Rigidbody.isKinematic = false;
-        MovementInputValue = 0f;
-        TurnInputValue = 0f;
-    }
-
-
-    private void OnDisable ()
-    {
-        Rigidbody.isKinematic = true;
-    }
-
 
     private void Start()
     {
-        MovementAxisName = "Vertical" + PlayerNumber;
-        TurnAxisName = "Horizontal" + PlayerNumber;
-
-        OriginalPitch = MovementAudio.pitch;
+        agent.updateRotation = false;
+        inputHoldWait = new WaitForSeconds(inputHoldDelay);
     }
-    */
+
 
     private void Update()
     {
-        // Store the player's input and make sure the audio for the engine is playing.
+        if (agent.pathPending)
+            return;
+        float speed = agent.desiredVelocity.magnitude;
+
+        if (agent.remainingDistance <= agent.stoppingDistance * stopDistanceProportion)
+            Stopping(out speed);
+        else if (speed > turnSpeedThreshold)
+            Moving();
+        animator.SetFloat(hashSpeedPara, speed, speedDampTime, Time.deltaTime);
     }
 
 
-    private void EngineAudio()
+    public void MoveToCameraPoint(Vector3 point)
     {
-        // Play the correct audio clip based on whether or not the tank is moving and what audio is currently playing.
+        Ray ray = Camera.main.ScreenPointToRay(point);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            MoveToPoint(hit.point);
+        }
     }
 
 
-    private void FixedUpdate()
+    public void MoveToPoint(Vector3 newPosition)
     {
-        // Move and turn the tank.
+        agent.SetDestination(newPosition);
+        agent.isStopped = false;
     }
 
-
-    private void Move()
+    public void Stop()
     {
-        // Adjust the position of the tank based on the player's input.
+       // agent.SetDestination(agent.transform.position);
+        agent.isStopped = true;
     }
 
-
-    private void Turn()
+    private void Stopping(out float speed)
     {
-        // Adjust the rotation of the tank based on the player's input.
+        agent.isStopped = true;
+        speed = 0f;
     }
+
+
+    private void Moving()
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(agent.desiredVelocity);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, turnSmoothing * Time.deltaTime);
+    }
+
+
+
 }

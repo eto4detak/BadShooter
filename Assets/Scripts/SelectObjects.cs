@@ -60,9 +60,18 @@ public class SelectObjects : MonoBehaviour
 
     public void SelectUnit(Unit unit)
     {
-        Selected.Add(unit);
-        HighlightSelected();
-        weaponPanel.SetTarget(unit.manager);
+        PassiveUnit passive;
+        if (unit.faction == Teams.Player )
+        {
+            Selected.Add(unit);
+            HighlightSelected();
+            weaponPanel.SetTarget(unit.manager);
+        }
+        else if(passive = unit.GetComponent<PassiveUnit>())
+        {
+            PassiveUnitPanel.instance.SetOwner(passive.GetPlayerUnit()?.manager, unit.manager);
+        }
+
     }
 
     public void Deselect()

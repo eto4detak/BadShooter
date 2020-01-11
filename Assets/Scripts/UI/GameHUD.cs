@@ -23,21 +23,9 @@ public class GameHUD : MonoBehaviour
     public Text speed;
 
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     public void SelectUnit(Unit target) 
     {
         frontImg.GetComponent<Button>().image.sprite = target.GetSprite();
-        damage.text = target.domage.ToString();
-        armor.text = target.armor.ToString();
         speed.text = target.speed.ToString();
         //if (target.command is AttackCommand)
         //{

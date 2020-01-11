@@ -2,10 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Teams
+public enum Teams : int
 {
-    Player1,
-    Player2,
-    Neitral,
+    Player = 0,
+    Enemy,
+    Red,
+    Blue,
+    Back,
+    Green,
+    White,
+    Brown,
+    Orange,
+    Neutral,
+    Passive,
     Hostile,
+    Boss,
 }

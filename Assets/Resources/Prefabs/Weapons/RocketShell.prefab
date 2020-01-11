@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5082694674935161946}
   - component: {fileID: 5360504797108783038}
   m_Layer: 0
-  m_Name: CompleteShell
+  m_Name: RocketShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 1eaf38615715e9c4c85f1495b99567f3, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,7 +107,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 6497992201761162364}
   - component: {fileID: 9106765391074741273}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Particle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

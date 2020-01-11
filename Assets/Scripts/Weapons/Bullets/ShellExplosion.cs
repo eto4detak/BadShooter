@@ -24,20 +24,18 @@ public class ShellExplosion : MonoBehaviour
 
     private void OnTriggerEnter (Collider other)
     {
-        Collider[] colliders = Physics.OverlapSphere (transform.position, ExplosionRadius);
+        Collider[] abstacles = Physics.OverlapSphere (transform.position, ExplosionRadius);
 
-        for (int i = 0; i < colliders.Length; i++)
+        for (int i = 0; i < abstacles.Length; i++)
         {
-            Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody> ();
-
-            if (!targetRigidbody)
+            if (!abstacles[i].attachedRigidbody)
                 continue;
            // targetRigidbody.AddExplosionForce (ExplosionForce, transform.position, ExplosionRadius);
-            CharacterHealth targetHealth = targetRigidbody.GetComponent<CharacterHealth> ();
+            CharacterHealth targetHealth = abstacles[i].GetComponent<CharacterHealth> ();
 
             if (!targetHealth)
                 continue;
-            float damage = CalculateDamage (targetRigidbody.position);
+            float damage = CalculateDamage (abstacles[i].attachedRigidbody.position);
             targetHealth.TakeDamage (damage);
         }
 

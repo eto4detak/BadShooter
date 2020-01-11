@@ -9,18 +9,18 @@ public class ItemInfoWeapon : MonoBehaviour
     public Text textName;
     public Text count;
 
-    private Weapon _weapon;
-    public void Setup(Weapon weapon)
+    private Weapon weapon;
+    public void Setup(Weapon _weapon)
     {
-        _weapon = weapon;
-        textName.text = weapon.name;
-        btnFront.image.sprite = weapon.frontImage;
+        weapon = _weapon;
+        textName.text = _weapon.name;
+        btnFront.image.sprite = _weapon.frontImage;
         btnFront.onClick.AddListener(OnClickSelectWeapon);
     }
 
 
     private void OnClickSelectWeapon()
     {
-        if(_weapon)  _weapon.SelectWeapon();
+        if(weapon)  weapon.SelectWeapon();
     }
 }

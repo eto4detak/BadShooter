@@ -11,13 +11,5 @@ public class PController : MonoBehaviour
     public List<Unit> PlayerUnits = new List<Unit>();
     public List<Unit> EnemiesUnits = new List<Unit>();
 
-    void Start()
-    {
-        
-    }
 
-    void Update()
-    {
-        
-    }
 }
